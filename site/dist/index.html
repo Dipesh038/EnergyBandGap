@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#102b35">
+  <meta name="description" content="Explore a material's predicted energy band gap using a trained random forest model.">
+  <title>Band Gap Lab · Material Prediction Explorer</title>
+  <link rel="icon" type="image/svg+xml" sizes="any" href="favicon.svg?v=2">
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#top" aria-label="Band Gap Lab home"><span class="brand-mark"><img src="favicon.svg?v=2" alt="" width="28" height="28"></span><span>Band Gap <strong>Lab</strong></span></a>
+    <nav aria-label="Page sections"><a href="#predict">Try the model</a><a href="#how-it-works">How it works</a><a href="#about">About the data</a></nav>
+    <span class="topbar-tag">INTERACTIVE PROJECT DEMO</span>
+  </header>
+
+  <main id="top">
+    <section class="hero wrap" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <div class="eyebrow"><span class="eyebrow-line"></span> MATERIALS SCIENCE × MACHINE LEARNING</div>
+        <h1 id="hero-title">From a formula<br>to its <em>band gap.</em></h1>
+        <p>Type a material’s chemical formula and watch a trained random forest estimate its energy band gap in electron volts.</p>
+        <a class="hero-link" href="#predict">Explore the prediction <span aria-hidden="true">↗</span></a>
+      </div>
+      <div class="hero-art" aria-hidden="true">
+        <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div>
+        <div class="hero-atom atom-a">Zn</div><div class="hero-atom atom-b">O</div>
+        <div class="hero-art-line line-a"></div><div class="hero-art-line line-b"></div><div class="hero-art-line line-c"></div>
+        <div class="hero-art-note">COMPOSITION <span>→</span> PREDICTION</div>
+      </div>
+    </section>
+
+    <section id="predict" class="workspace wrap" aria-labelledby="workspace-title">
+      <div class="section-heading"><div><span class="section-kicker">01 / LIVE MODEL</span><h2 id="workspace-title">Live band gap calculator</h2></div><p>One formula is all you need.</p></div>
+      <div class="calculator-flow" aria-label="Calculator steps">
+        <span class="flow-live"><span class="live-dot" aria-hidden="true"></span> TRY IT NOW</span>
+        <span class="flow-step"><strong>1</strong> Enter a formula</span>
+        <span class="flow-arrow" aria-hidden="true">→</span>
+        <span class="flow-step"><strong>2</strong> Run the model</span>
+        <span class="flow-arrow" aria-hidden="true">→</span>
+        <span class="flow-step"><strong>3</strong> Compare the values</span>
+      </div>
+      <div class="workspace-grid">
+        <div class="input-panel panel">
+          <div class="panel-label"><span class="panel-icon">01</span> MATERIAL INPUT</div>
+          <form id="predict-form" novalidate>
+            <label for="formula">Chemical formula</label>
+            <div class="input-wrap"><input id="formula" name="formula" type="text" placeholder="e.g. ZnO" value="ZnO" spellcheck="false" autocomplete="off" aria-describedby="formula-help formula-note formula-error"><span class="input-icon">⌁</span></div>
+            <p id="formula-help" class="field-help">Enter a chemical formula, such as HCl, GaAs, or Hg0.7Cd0.3Te. Uppercase input like HCL is corrected when unambiguous.</p>
+            <p id="formula-note" class="field-note" role="status" hidden></p>
+            <p id="formula-error" class="field-error" role="alert" hidden></p>
+            <button id="predict-button" class="predict-button" type="submit"><span>Predict band gap</span><span aria-hidden="true">→</span></button>
+          </form>
+          <div class="examples"><span>QUICK EXAMPLES</span><div class="example-list"><button type="button" data-formula="ZnO">ZnO</button><button type="button" data-formula="GaAs">GaAs</button><button type="button" data-formula="Si">Si</button><button type="button" data-formula="Hg0.7Cd0.3Te">Hg₀.₇Cd₀.₃Te</button></div></div>
+        </div>
+        <div class="result-panel panel" id="result-panel" aria-live="polite">
+          <div class="panel-label"><span class="panel-icon warm">02</span> MODEL OUTPUT <span id="model-status" class="model-status">READY TO PREDICT</span></div>
+          <div id="result-empty" class="result-empty"><div class="empty-orb"><span>eV</span></div><h3>Your calculated value appears here</h3><p>Enter a formula and press the highlighted button. The prediction and any CSV reference will appear side by side.</p></div>
+          <div id="result-content" class="result-content" hidden>
+            <div class="result-main"><div><span class="result-overline">PREDICTED ENERGY BAND GAP</span><div class="result-number"><strong id="gap-value">—</strong><span>eV</span></div><p id="result-formula" class="result-formula"></p></div><div class="result-symbol">E<sub>g</sub></div></div>
+            <div class="band-visual" aria-label="Illustrative energy band diagram"><div class="band-label">CONDUCTION BAND</div><div class="band-block conduction"></div><div id="band-gap-space" class="band-gap-space"><span id="band-gap-label">0 eV gap</span><span class="gap-arrow" aria-hidden="true">↕</span></div><div class="band-block valence"></div><div class="band-label">VALENCE BAND</div></div>
+            <p class="diagram-note">Illustrative diagram · spacing follows the predicted value</p>
+            <div id="observed-box" class="observed-box" hidden></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="how-it-works" class="explain wrap" aria-labelledby="explain-title">
+      <div class="section-heading"><div><span class="section-kicker">02 / UNDER THE HOOD</span><h2 id="explain-title">How the prediction works</h2></div><p>Four steps you can explain in a viva.</p></div>
+      <div class="steps"><article class="step"><span class="step-num">01</span><div class="step-graphic formula-graphic">ZnO</div><h3>Enter a formula</h3><p>The material is broken into its elements and their amounts.</p></article><article class="step"><span class="step-num">02</span><div class="step-graphic fractions-graphic"><span style="width:50%"></span><i style="width:50%"></i></div><h3>Find atomic fractions</h3><p>Each element becomes a share of the total atoms. For ZnO, Zn and O are each 50%.</p></article><article class="step"><span class="step-num">03</span><div class="step-graphic trees-graphic"><span>♣</span><span>♣</span><span>♣</span></div><h3>Ask 200 trees</h3><p>Each decision tree follows the composition through learned splits to one estimate.</p></article><article class="step"><span class="step-num">04</span><div class="step-graphic average-graphic">Σ <span>÷ 200</span></div><h3>Average their answers</h3><p>The forest averages all 200 tree outputs to predict the gap in eV.</p></article></div>
+      <div id="composition-panel" class="composition-panel" hidden><div><span class="section-kicker">CURRENT FORMULA</span><h3 id="composition-title">Atomic composition</h3><p>The bars show the actual fractions passed into the model.</p></div><div id="composition-bars" class="composition-bars"></div></div>
+    </section>
+
+    <section id="about" class="about-section"><div class="wrap about-grid"><div><span class="section-kicker light">03 / PROJECT NOTES</span><h2>A visual way to present the model.</h2><p>This demo runs the saved random forest directly in your browser. It uses 118 element inputs and returns a numerical estimate for the band gap.</p></div><div class="about-facts"><div><strong>200</strong><span>decision trees</span></div><div><strong>118</strong><span>element features</span></div><div><strong>6,354</strong><span>experimental entries in the supplied CSV</span></div></div></div><div class="wrap caveat"><span>PLEASE NOTE</span><p>A prediction is an estimate, not a laboratory measurement. The model sees elemental fractions, not crystal structure or molecular context, so unfamiliar compounds and isolated molecules need extra caution. An experimental CSV value is shown separately when the exact formula is present; those entries are not an independent accuracy test.</p></div></section>
+  </main>
+  <footer class="footer wrap"><span class="footer-brand"><img src="favicon.svg?v=2" alt="" width="17" height="17"> Band Gap Lab</span><span>Material formula → atomic fractions → random forest → predicted eV</span></footer>
+</body>
+</html>
